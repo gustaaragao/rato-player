@@ -2,15 +2,16 @@
 
 ## Todo-List
 [ ] Fazer a **conexão** com os bancos Postgres e MongoDB.
+    -> [X] Postgres
+    -> [ ] MongoDB
 
-[ ] Escolher **3 tabelas**, duas tabelas e uma tabela gerada de um relacionamento ou agregação.
+[X] Escolher **3 tabelas**, duas tabelas e uma tabela gerada de um relacionamento ou agregação.
+    -> As entidades 'Colecao' e 'Genero', e o relacionamento foi 'Possui'
 
-[ ] Criar **Entidades** para conectar ao Banco de Dados.
+[X] Criar **Models** para conectar ao Banco de Dados.
 
 [ ] Criar **Schemas** para o Swagger com Pydantic.
 
 [ ] Criar o **CRUD** para as tabelas.
-
-[ ] Fazer Makefile ou usar Taskipy para rodar comandos.
 
 [ ] Fazer Documentação da Aplicação
