@@ -6,8 +6,7 @@ from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, Query, HTTPException
 from database import get_session
 from models import Genero
-from schemas.mensagem import Mensagem
-from schemas.genero import GeneroSchema, GeneroList, GeneroPublic, GeneroUpdateSchema
+from schemas import GeneroSchema, GeneroList, GeneroPublic, GeneroUpdateSchema, Mensagem
 
 router = APIRouter(prefix='/generos', tags=['Gêneros'])
 
@@ -189,3 +188,39 @@ def delete_genero(
     session.commit()
 
     return {'mensagem': 'Gênero deletado com sucesso.'}
+
+
+@router.get(
+    '/{id_genero}/colecoes',
+    summary='Listar coleções de um gênero',
+    description='Retorna todas as coleções associadas a um gênero específico.',
+    response_model=dict
+)
+def get_colecoes_from_genero(
+    id_genero: int,
+    session: Session = Depends(get_session)
+):
+    # Buscar o gênero com as coleções carregadas
+    genero = session.scalar(select(Genero).where(Genero.id_genero == id_genero))
+    if not genero:
+        raise HTTPException(
+            status_code=HTTPStatus.NOT_FOUND,
+            detail=f'O gênero de ID {id_genero} não foi encontrado.'
+        )
+    
+    return {
+        'genero': {
+            'id_genero': genero.id_genero,
+            'nome': genero.nome,
+            'surgiu_em': genero.surgiu_em
+        },
+        'colecoes': [
+            {
+                'id_colecao': colecao.id_colecao,
+                'titulo': colecao.titulo,
+                'tipo': colecao.tipo.value,
+                'duracao': colecao.duracao,
+                'data_lancamento': colecao.data_lancamento
+            } for colecao in genero.colecoes
+        ]
+    }

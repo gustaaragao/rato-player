@@ -1,12 +1,18 @@
 from datetime import date
 
-from sqlalchemy.orm import Mapped, registry, mapped_column
-from sqlalchemy import ForeignKey, Integer, String, Date, Enum
+from sqlalchemy.orm import Mapped, registry, mapped_column, relationship
+from sqlalchemy import Column, Table, ForeignKey, Integer, String, Date, Enum
 
 from enums import TipoColecaoEnum
 
 table_registry = registry()
 
+genero_colecao = Table(
+    "genero_colecao",
+    table_registry.metadata,
+    Column("id_genero", ForeignKey("genero.id_genero"), primary_key=True),
+    Column("id_colecao", ForeignKey("colecao.id_colecao"), primary_key=True),
+)
 
 @table_registry.mapped_as_dataclass
 class Genero:
@@ -15,6 +21,12 @@ class Genero:
     id_genero: Mapped[int] = mapped_column(Integer, init=False, primary_key=True, autoincrement=True)
     nome: Mapped[str] = mapped_column(String(60), unique=True, nullable=False)
     surgiu_em: Mapped[date] = mapped_column(Date, nullable=False)
+
+    colecoes = relationship(
+        "Colecao",
+        secondary=genero_colecao,
+        back_populates="generos"
+    )
 
 @table_registry.mapped_as_dataclass
 class Colecao:
@@ -27,9 +39,8 @@ class Colecao:
     titulo: Mapped[str] = mapped_column(String(90), nullable=False)
     tipo: Mapped[TipoColecaoEnum] = mapped_column(Enum(TipoColecaoEnum), nullable=False)
 
-@table_registry.mapped_as_dataclass
-class GeneroColecao:
-    __tablename__ = 'Genero_Colecao'
-    
-    nome_genero: Mapped[str] = mapped_column(ForeignKey("Genero.nome"), primary_key=True)
-    id_colecao: Mapped[int] = mapped_column(ForeignKey("Colecao.id_colecao"), primary_key=True)
+    generos = relationship(
+        "Genero",
+        secondary=genero_colecao,
+        back_populates="colecoes"
+    )

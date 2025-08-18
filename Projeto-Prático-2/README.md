@@ -10,8 +10,8 @@
 
 [X] Criar **Models** para conectar ao Banco de Dados.
 
-[ ] Criar **Schemas** para o Swagger com Pydantic.
+[X] Criar **Schemas** para o Swagger com Pydantic.
 
-[ ] Criar o **CRUD** para as tabelas.
+[X] Criar o **CRUD** para as tabelas.
 
-[ ] Fazer Documentação da Aplicação
+[ ] Melhorar a Documentação da Aplicação
