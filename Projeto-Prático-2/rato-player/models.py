@@ -10,9 +10,10 @@ table_registry = registry()
 
 @table_registry.mapped_as_dataclass
 class Genero:
-    __tablename__ = 'Genero'
+    __tablename__ = 'genero'
 
-    nome: Mapped[str] = mapped_column(String(60), primary_key=True)
+    id_genero: Mapped[int] = mapped_column(Integer, init=False, primary_key=True, autoincrement=True)
+    nome: Mapped[str] = mapped_column(String(60), unique=True, nullable=False)
     surgiu_em: Mapped[date] = mapped_column(Date, nullable=False)
 
 @table_registry.mapped_as_dataclass

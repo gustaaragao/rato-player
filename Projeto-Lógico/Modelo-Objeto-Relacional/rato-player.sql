@@ -1,4 +1,6 @@
--- Caso exista, drop tabelas
+-- -----------------------------------------------------
+-- Drop das tabelas existentes (se houver)
+-- -----------------------------------------------------
 DROP TABLE IF EXISTS Ingresso CASCADE;
 DROP TABLE IF EXISTS Vestimenta CASCADE;
 DROP TABLE IF EXISTS Genero_Artista_Banda CASCADE;
@@ -32,7 +34,9 @@ DROP TABLE IF EXISTS Amizade CASCADE;
 DROP TABLE IF EXISTS Ouvinte CASCADE;
 DROP TABLE IF EXISTS Local CASCADE;
 
+-- -----------------------------------------------------
 -- Criar ENUM types
+-- -----------------------------------------------------
 CREATE TYPE sexo_enum AS ENUM ('M', 'F', 'NB');
 CREATE TYPE tipo_colecao_enum AS ENUM ('Album', 'EP', 'Single', 'Compilacao');
 CREATE TYPE tipo_disco_enum AS ENUM ('CD', 'Vinil', 'Fita');
@@ -105,17 +109,19 @@ CREATE TABLE Playlist_Salva (
 -- Tabela Genero
 -- -----------------------------------------------------
 CREATE TABLE Genero (
-  nome VARCHAR(60) PRIMARY KEY,
-  surgiu_em DATE NOT NULL
+  id_genero INTEGER GENERATED ALWAYS AS IDENTITY,
+  nome VARCHAR(60) NOT NULL UNIQUE,
+  surgiu_em DATE NOT NULL,
+  PRIMARY KEY (id_genero)
 );
 
 -- -----------------------------------------------------
 -- Tabela Genero_Favorito
 -- -----------------------------------------------------
 CREATE TABLE Genero_Favorito (
-  nome_genero VARCHAR(60) NOT NULL REFERENCES Genero (nome),
+  id_genero INTEGER NOT NULL REFERENCES Genero (id_genero),
   id_usuario INTEGER NOT NULL REFERENCES Ouvinte (id_usuario),
-  PRIMARY KEY (nome_genero, id_usuario)
+  PRIMARY KEY (id_genero, id_usuario)
 );
 
 -- -----------------------------------------------------
@@ -293,9 +299,9 @@ CREATE TABLE Videoclipe (
 -- Tabela Genero_Musica
 -- -----------------------------------------------------
 CREATE TABLE Genero_Musica (
-  nome_genero VARCHAR(60) NOT NULL REFERENCES Genero (nome),
+  id_genero INTEGER NOT NULL REFERENCES Genero (id_genero),
   id_musica INTEGER NOT NULL REFERENCES Musica (id_musica),
-  PRIMARY KEY (nome_genero, id_musica)
+  PRIMARY KEY (id_genero, id_musica)
 );
 
 -- -----------------------------------------------------
@@ -320,9 +326,9 @@ CREATE TABLE Artista_Banda_Colecao (
 -- Tabela Genero_Colecao
 -- -----------------------------------------------------
 CREATE TABLE Genero_Colecao (
-  nome_genero VARCHAR(60) NOT NULL REFERENCES Genero (nome),
+  id_genero INTEGER NOT NULL REFERENCES Genero (id_genero),
   id_colecao INTEGER NOT NULL REFERENCES Colecao (id_colecao),
-  PRIMARY KEY (nome_genero, id_colecao)
+  PRIMARY KEY (id_genero, id_colecao)
 );
 
 -- -----------------------------------------------------
@@ -358,9 +364,9 @@ CREATE TABLE Atracao (
 -- Tabela Genero_Artista_Banda
 -- -----------------------------------------------------
 CREATE TABLE Genero_Artista_Banda (
-  nome_genero VARCHAR(60) NOT NULL REFERENCES Genero (nome),
+  id_genero INTEGER NOT NULL REFERENCES Genero (id_genero),
   id_artista_banda INTEGER NOT NULL REFERENCES Artista_Banda (id_usuario),
-  PRIMARY KEY (nome_genero, id_artista_banda)
+  PRIMARY KEY (id_genero, id_artista_banda)
 );
 
 -- -----------------------------------------------------
@@ -381,7 +387,9 @@ CREATE TABLE Ingresso (
   tipo tipo_ingresso_enum NOT NULL
 );
 
--- Criando indexes para melhor performance
+-- -----------------------------------------------------
+-- Índices para performance
+-- -----------------------------------------------------
 CREATE INDEX idx_ouvinte_username ON Ouvinte (username);
 CREATE INDEX idx_ouvinte_email ON Ouvinte USING GIN (email);
 CREATE INDEX idx_artista_username ON Artista_Banda (username);

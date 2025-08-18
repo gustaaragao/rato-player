@@ -1,5 +1,7 @@
+from datetime import date
 from http import HTTPStatus
-from sqlalchemy import select
+from typing import Optional
+from sqlalchemy import and_, select
 from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, HTTPException, Query
 from database import get_session
@@ -38,47 +40,55 @@ def create_colecao(
 @router.get(
     '/',
     summary='Listar todas as coleções',
-    description='Retorna todas as coleções cadastradas, com suporte a paginação e filtro por tipo.',
+    description='Retorna todas as coleções cadastradas (com suporte a paginação).',
     response_model=ColecaoList
 )
-def read_colecoes(
-    skip: int = 0,
-    limit: int = 10,
-    tipo: TipoColecaoEnum | None = Query(None, description="Filtrar por tipo de coleção"),
-    session: Session = Depends(get_session)
-):
-    stmt = select(Colecao)
-    if tipo:
-        stmt = stmt.where(Colecao.tipo == tipo)
-
-    stmt = stmt.offset(skip).limit(limit)
-
-    colecoes = session.execute(stmt).scalars().all()
+def read_colecoes(skip: int = 0, limit: int = 10, session: Session = Depends(get_session)):
+    colecoes = session.scalars(select(Colecao).offset(skip).limit(limit)).all()
 
     return {'colecoes': colecoes}
 
 @router.get(
     '/buscar',
-    summary='Buscar coleções por nome',
+    summary='Buscar coleções por nome e/ou período de lançamento',
     description='''
-    Retorna uma lista de coleções cujo **nome da capa** contenha o valor informado, com suporte a paginação.
-    Também é possível filtrar opcionalmente pelo **tipo de coleção**.
-    
+    Retorna uma lista de coleções cujo **título** contenha o valor informado, 
+    com suporte a paginação. Também é possível filtrar opcionalmente pelo 
+    **tipo de coleção** e/ou por período de data de lançamento.
+
     Exemplos:
-    - `/colecoes/buscar?nome=rock`
-    - `/colecoes/buscar?nome=rock&tipo=CD`
-    '''
+    - `/colecoes/buscar?titulo=rock`
+    - `/colecoes/buscar?titulo=rock&tipo=CD`
+    - `/colecoes/buscar?titulo=rock&data_inicio=2020-01-01&data_fim=2022-12-31`
+    ''',
+    response_model=ColecaoList
 )
 def search_colecoes(
-    titulo: str = Query(..., description='Parte do título da coleção a ser buscada'),
-    tipo: TipoColecaoEnum | None = Query(None, description='Filtrar por tipo de coleção (ex: "Album", "EP", "Single", "Compilacao")'),
+    titulo: str | None = Query(None, description='Parte do título da coleção a ser buscada'),
+    tipo: TipoColecaoEnum | None = Query(None, description='Filtrar por tipo de coleção'),
+    data_inicio: Optional[date] = Query(None, description='Data mínima de lançamento (Formato: YYYY-MM-DD)'),
+    data_fim: Optional[date] = Query(None, description='Data máxima de lançamento (Formato: YYYY-MM-DD)'),
+    skip: int = 0,
+    limit: int = 10,
     session: Session = Depends(get_session)
 ):
-    stmt = select(Colecao).where(Colecao.titulo.ilike(f"%{titulo}%"))
+    stmt = select(Colecao)
+
+    if titulo:
+        stmt = stmt.where(Colecao.titulo.ilike(f"%{titulo}%"))
 
     if tipo:
         stmt = stmt.where(Colecao.tipo == tipo)
     
+    if data_inicio and data_fim:
+        stmt = stmt.where(and_(Colecao.data_lancamento >= data_inicio, Colecao.data_lancamento <= data_fim))
+    elif data_inicio:
+        stmt = stmt.where(Colecao.data_lancamento >= data_inicio)
+    elif data_fim:
+        stmt = stmt.where(Colecao.data_lancamento <= data_fim)
+
+    stmt = stmt.offset(skip).limit(limit)
+
     colecoes = session.execute(stmt).scalars().all() 
 
     return {'colecoes': colecoes}
@@ -122,7 +132,7 @@ def update_colecao(
             detail=f'A coleção de ID {id_colecao} não foi encontrada.'
         )
 
-    colecao_schema = colecao_schema.model_dump(exclude_unset=True)
+    colecao_schema = colecao_schema.model_dump()
     for key, value in colecao_schema.items():
         setattr(colecao, key, value)
 
@@ -135,7 +145,8 @@ def update_colecao(
 @router.patch(
     '/{id_colecao}',
     summary='Atualizar coleção parcialmente',
-    description='Atualiza apenas os campos enviados no corpo da requisição.'
+    description='Atualiza apenas os campos enviados no corpo da requisição.',
+    response_model=ColecaoPublic
 )
 def patch_colecao(
     id_colecao: int,
