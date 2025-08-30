@@ -4,12 +4,12 @@ from typing import Optional
 from sqlalchemy import and_, select
 from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, Query, HTTPException
-from database import get_session
-from models import Genero
+from databases.postgres import get_postgres
+from databases.mongo import get_mongodb
+from models.postgres import Genero
 from schemas import GeneroSchema, GeneroList, GeneroPublic, GeneroUpdateSchema, Mensagem
 
 router = APIRouter(prefix='/generos', tags=['Gêneros'])
-
 
 @router.post(
     '/', 
@@ -19,7 +19,7 @@ router = APIRouter(prefix='/generos', tags=['Gêneros'])
 )
 def create_genero(
     genero_schema: GeneroSchema,
-    session: Session = Depends(get_session)
+    session: Session = Depends(get_postgres)
 ):
     db_genero = session.scalar(select(Genero).where(Genero.nome == genero_schema.nome))
 
@@ -43,7 +43,7 @@ def create_genero(
     description='Retorna todos os gêneros cadastrados (com suporte a paginação).',
     response_model=GeneroList
 )
-def read_generos(skip: int = 0, limit: int = 10, session: Session = Depends(get_session)):
+def read_generos(skip: int = 0, limit: int = 10, session: Session = Depends(get_postgres)):
     generos = session.scalars(select(Genero).offset(skip).limit(limit)).all()
 
     return {'generos': generos}
@@ -68,7 +68,7 @@ def search_generos(
     data_fim: Optional[date] = Query(None, description='Data máxima de surgimento (Formato: YYYY-MM-DD)'),
     skip: int = 0, 
     limit: int = 10,
-    session: Session = Depends(get_session)
+    session: Session = Depends(get_postgres)
 ):
     stmt = select(Genero)
 
@@ -96,7 +96,7 @@ def search_generos(
 )
 def read_genero_by_id(
     id_genero: int,
-    session: Session = Depends(get_session)
+    session: Session = Depends(get_postgres)
 ):
     db_genero = session.scalar(select(Genero).where(Genero.id_genero == id_genero))
 
@@ -117,7 +117,7 @@ def read_genero_by_id(
 def update_genero(
     id_genero: int,
     genero_schema: GeneroSchema,
-    session: Session = Depends(get_session)
+    session: Session = Depends(get_postgres)
 ):
     genero = session.scalar(select(Genero).where(Genero.id_genero == id_genero))
 
@@ -146,7 +146,7 @@ def update_genero(
 def patch_genero(
     id_genero: int,
     genero_schema: GeneroUpdateSchema,
-    session: Session = Depends(get_session)
+    session: Session = Depends(get_postgres)
 ):
     genero = session.scalar(select(Genero).where(Genero.id_genero == id_genero))
 
@@ -174,7 +174,7 @@ def patch_genero(
 )
 def delete_genero(
     id_genero: int,
-    session: Session = Depends(get_session)
+    session: Session = Depends(get_postgres)
 ):
     colecao = session.scalar(select(Genero).where(Genero.id_genero == id_genero))
 
@@ -198,7 +198,7 @@ def delete_genero(
 )
 def get_colecoes_from_genero(
     id_genero: int,
-    session: Session = Depends(get_session)
+    session: Session = Depends(get_postgres)
 ):
     # Buscar o gênero com as coleções carregadas
     genero = session.scalar(select(Genero).where(Genero.id_genero == id_genero))

@@ -1,13 +1,14 @@
 from datetime import date
 from http import HTTPStatus
 from typing import Optional
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import and_, select
 from sqlalchemy.orm import Session, selectinload
-from fastapi import APIRouter, Depends, HTTPException, Query
-from database import get_session
-from models import Colecao, Genero
+from databases.postgres import get_postgres
+from databases.mongo import get_mongodb
 from schemas import ColecaoList, ColecaoPublic, ColecaoSchema, ColecaoUpdateSchema, Mensagem
 from enums import TipoColecaoEnum
+from models.postgres import Colecao, Genero
 
 router = APIRouter(prefix='/colecoes', tags=['Coleções'])
 
@@ -20,7 +21,7 @@ router = APIRouter(prefix='/colecoes', tags=['Coleções'])
 )
 def create_colecao(
     colecao_schema: ColecaoSchema,
-    session: Session = Depends(get_session)
+    session: Session = Depends(get_postgres)
 ):
     colecao = Colecao(
         titulo=colecao_schema.titulo,
@@ -42,7 +43,7 @@ def create_colecao(
     description='Retorna todas as coleções cadastradas (com suporte a paginação).',
     response_model=ColecaoList
 )
-def read_colecoes(skip: int = 0, limit: int = 10, session: Session = Depends(get_session)):
+def read_colecoes(skip: int = 0, limit: int = 10, session: Session = Depends(get_postgres)):
     colecoes = session.scalars(
         select(Colecao)
         .options(selectinload(Colecao.generos))
@@ -74,7 +75,7 @@ def search_colecoes(
     data_fim: Optional[date] = Query(None, description='Data máxima de lançamento (Formato: YYYY-MM-DD)'),
     skip: int = 0,
     limit: int = 10,
-    session: Session = Depends(get_session)
+    session: Session = Depends(get_postgres)
 ):
     stmt = select(Colecao)
 
@@ -107,7 +108,7 @@ def search_colecoes(
 )
 def read_colecao_by_id(
     id_colecao: int,
-    session: Session = Depends(get_session)
+    session: Session = Depends(get_postgres)
 ):
     colecao = session.scalar(
         select(Colecao)
@@ -132,7 +133,7 @@ def read_colecao_by_id(
 def update_colecao(
     id_colecao: int,
     colecao_schema: ColecaoSchema,
-    session: Session = Depends(get_session)
+    session: Session = Depends(get_postgres)
 ):
     colecao = session.scalar(select(Colecao).where(Colecao.id_colecao == id_colecao))
 
@@ -161,7 +162,7 @@ def update_colecao(
 def patch_colecao(
     id_colecao: int,
     colecao_schema: ColecaoUpdateSchema,
-    session: Session = Depends(get_session)
+    session: Session = Depends(get_postgres)
 ):
     colecao = session.scalar(select(Colecao).where(Colecao.id_colecao == id_colecao))
 
@@ -189,7 +190,7 @@ def patch_colecao(
 )
 def delete_colecao(
     id_colecao: int,
-    session: Session = Depends(get_session)
+    session: Session = Depends(get_postgres)
 ):
     colecao = session.scalar(select(Colecao).where(Colecao.id_colecao == id_colecao))
 
@@ -214,7 +215,7 @@ def delete_colecao(
 def add_genero_to_colecao(
     id_colecao: int,
     id_genero: int,
-    session: Session = Depends(get_session)
+    session: Session = Depends(get_postgres)
 ):
     # Buscar a coleção
     colecao = session.scalar(select(Colecao).where(Colecao.id_colecao == id_colecao))
@@ -255,7 +256,7 @@ def add_genero_to_colecao(
 def remove_genero_from_colecao(
     id_colecao: int,
     id_genero: int,
-    session: Session = Depends(get_session)
+    session: Session = Depends(get_postgres)
 ):
     # Buscar a coleção
     colecao = session.scalar(select(Colecao).where(Colecao.id_colecao == id_colecao))
@@ -295,7 +296,7 @@ def remove_genero_from_colecao(
 )
 def get_generos_from_colecao(
     id_colecao: int,
-    session: Session = Depends(get_session)
+    session: Session = Depends(get_postgres)
 ):
     # Buscar a coleção com os gêneros carregados
     colecao = session.scalar(select(Colecao).where(Colecao.id_colecao == id_colecao))
@@ -329,7 +330,7 @@ def get_generos_from_colecao(
 def set_generos_to_colecao(
     id_colecao: int,
     generos_ids: list[int],
-    session: Session = Depends(get_session)
+    session: Session = Depends(get_postgres)
 ):
     # Buscar a coleção
     colecao = session.scalar(select(Colecao).where(Colecao.id_colecao == id_colecao))
