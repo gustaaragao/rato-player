@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, Query, HTTPException
 from databases.postgres import get_postgres
 from databases.mongo import get_mongodb
-from models.postgres import Genero
+from models import Genero
 from schemas import GeneroSchema, GeneroList, GeneroPublic, GeneroUpdateSchema, Mensagem
 
 router = APIRouter(prefix='/generos', tags=['Gêneros'])

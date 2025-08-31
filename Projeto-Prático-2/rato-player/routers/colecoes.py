@@ -8,7 +8,7 @@ from databases.postgres import get_postgres
 from databases.mongo import get_mongodb
 from schemas import ColecaoList, ColecaoPublic, ColecaoSchema, ColecaoUpdateSchema, Mensagem
 from enums import TipoColecaoEnum
-from models.postgres import Colecao, Genero
+from models import Colecao, Genero
 
 router = APIRouter(prefix='/colecoes', tags=['Coleções'])
 
