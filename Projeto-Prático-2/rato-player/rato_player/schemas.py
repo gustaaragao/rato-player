@@ -8,7 +8,7 @@ from rato_player.enums import TipoColecaoEnum
 
 class FilterPage(BaseModel):
     offset: int = Field(0, ge=0)
-    limit: int = Field(1, ge=1)
+    limit: int = Field(10, ge=1)
 
 
 class ColecaoSearchFilters(FilterPage):
@@ -96,3 +96,8 @@ class GeneroList(BaseModel):
 
 class ColecaoList(BaseModel):
     colecoes: list[ColecaoPublic]
+
+
+class GeneroWithColecoes(BaseModel):
+    genero: GeneroBasic
+    colecoes: list[ColecaoBasic] = []

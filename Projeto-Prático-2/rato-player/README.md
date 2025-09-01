@@ -4,7 +4,7 @@
   <img src="docs/logo-rato-player-sem-fundo.png" alt="Rato Player" title="Rato Player">
 </div>
 
-API REST para gerenciamento de coleções musicais com Python + FastAPI.
+API Rest do Aplicativo de Música "Rato Player".
 
 ## 🛠 Tecnologias
 
@@ -21,6 +21,7 @@ API REST para gerenciamento de coleções musicais com Python + FastAPI.
 ![Diagrama da Arquitetura da API](docs/diagrama-arquitetura.png "Diagrama da Arquitetura da API")
 
 ## 🚀 Instalação
+
 Optamos por usar o [Poetry](https://python-poetry.org/) como gerenciador de pacotes no lugar do Pip. É necessário instalá-lo antes.
 
 ```bash
@@ -34,6 +35,7 @@ poetry shell
 ## ⚙️ Configuração
 
 Crie um `.env` como o `.env.example`:
+
 ```env
 # Postgres
 POSTGRES_HOST=
@@ -70,12 +72,14 @@ task lint
 ## 🛣 API Endpoints
 
 O projeto oferece **dois conjuntos completos de APIs** idênticas:
+
 - **PostgreSQL**: `/postgres/generos/` e `/postgres/colecoes/` (relacional)
 - **MongoDB**: `/mongo/generos/` e `/mongo/colecoes/` (documento)
 
 Ambas implementações compartilham os mesmos schemas Pydantic e oferecem funcionalidades idênticas.
 
 ### Gêneros (PostgreSQL: `/postgres/generos/` | MongoDB: `/mongo/generos/`)
+
 - `POST /` - Criar
 - `GET /` - Listar (paginação)
 - `GET /buscar` - Buscar por nome/data
@@ -84,6 +88,7 @@ Ambas implementações compartilham os mesmos schemas Pydantic e oferecem funcio
 - `DELETE /{id}` - Excluir
 
 ### Coleções (PostgreSQL: `/postgres/colecoes/` | MongoDB: `/mongo/colecoes/`)
+
 - `POST /` - Criar
 - `GET /` - Listar (paginação)
 - `GET /buscar` - Buscar por título/tipo/data
@@ -95,6 +100,7 @@ Ambas implementações compartilham os mesmos schemas Pydantic e oferecem funcio
 ## 📖 Exemplo de Uso
 
 ### PostgreSQL (IDs inteiros)
+
 ```bash
 # Criar gênero
 curl -X POST "http://localhost:8000/postgres/generos/" \
@@ -114,6 +120,7 @@ curl -X POST "http://localhost:8000/postgres/colecoes/" \
 ```
 
 ### MongoDB (IDs string/ObjectId)
+
 ```bash
 # Criar gênero (mesma estrutura, endpoint diferente)
 curl -X POST "http://localhost:8000/mongo/generos/" \
@@ -125,7 +132,7 @@ curl -X POST "http://localhost:8000/mongo/colecoes/" \
      -H "Content-Type: application/json" \
      -d '{
        "titulo": "Kind of Blue",
-       "tipo": "Album", 
+       "tipo": "Album",
        "duracao": 2876,
        "caminho_capa": "/covers/kob.jpg",
        "data_lancamento": "1959-08-17"

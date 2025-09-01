@@ -14,6 +14,7 @@ from rato_player.schemas import (
     GeneroSchema,
     GeneroSearchFilters,
     GeneroUpdateSchema,
+    GeneroWithColecoes,
     Mensagem,
 )
 
@@ -196,10 +197,9 @@ def delete_genero(id_genero: int, session: SessionPostgres):
     '/{id_genero}/colecoes',
     summary='Listar coleções de um gênero',
     description='Retorna todas as coleções associadas a um gênero específico.',
-    response_model=dict,
+    response_model=GeneroWithColecoes,
 )
 def get_colecoes_from_genero(id_genero: int, session: SessionPostgres):
-    # Buscar o gênero com as coleções carregadas
     genero = session.scalar(select(Genero).where(Genero.id_genero == id_genero))
     if not genero:
         raise HTTPException(
@@ -207,20 +207,24 @@ def get_colecoes_from_genero(id_genero: int, session: SessionPostgres):
             detail=f'O gênero de ID {id_genero} não foi encontrado.',
         )
 
+    # Constrói resposta usando os schemas básicos para garantir tipos
+    colecoes_list = [
+        {
+            'id_colecao': colecao.id_colecao,
+            'titulo': colecao.titulo,
+            'tipo': colecao.tipo.value,
+            'duracao': colecao.duracao,
+            'caminho_capa': getattr(colecao, 'caminho_capa', ''),
+            'data_lancamento': colecao.data_lancamento,
+        }
+        for colecao in genero.colecoes
+    ]
+
     return {
         'genero': {
             'id_genero': genero.id_genero,
             'nome': genero.nome,
             'surgiu_em': genero.surgiu_em,
         },
-        'colecoes': [
-            {
-                'id_colecao': colecao.id_colecao,
-                'titulo': colecao.titulo,
-                'tipo': colecao.tipo.value,
-                'duracao': colecao.duracao,
-                'data_lancamento': colecao.data_lancamento,
-            }
-            for colecao in genero.colecoes
-        ],
+        'colecoes': colecoes_list,
     }

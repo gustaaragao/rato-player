@@ -13,6 +13,7 @@ from rato_player.schemas import (
     GeneroSchema,
     GeneroSearchFilters,
     GeneroUpdateSchema,
+    GeneroWithColecoes,
     Mensagem,
 )
 
@@ -412,7 +413,7 @@ async def delete_genero(id_genero: str):
     '/{id_genero}/colecoes',
     summary='Listar coleções de um gênero',
     description='Retorna todas as coleções associadas a um gênero específico.',
-    response_model=dict,
+    response_model=GeneroWithColecoes,
 )
 async def get_colecoes_from_genero(id_genero: str):
     try:
@@ -434,22 +435,25 @@ async def get_colecoes_from_genero(id_genero: str):
         colecoes_cursor = colecoes_collection.find({'generos_ids': id_genero})
         colecoes = await colecoes_cursor.to_list(length=None)
 
+        colecoes_list = [
+            {
+                'id_colecao': str(colecao['_id']),
+                'titulo': colecao['titulo'],
+                'tipo': colecao['tipo'],
+                'duracao': colecao['duracao'],
+                'caminho_capa': colecao.get('caminho_capa', ''),
+                'data_lancamento': colecao['data_lancamento'],
+            }
+            for colecao in colecoes
+        ]
+
         return {
             'genero': {
                 'id_genero': str(genero['_id']),
                 'nome': genero['nome'],
                 'surgiu_em': genero['surgiu_em'],
             },
-            'colecoes': [
-                {
-                    'id_colecao': str(colecao['_id']),
-                    'titulo': colecao['titulo'],
-                    'tipo': colecao['tipo'],
-                    'duracao': colecao['duracao'],
-                    'data_lancamento': colecao['data_lancamento'],
-                }
-                for colecao in colecoes
-            ],
+            'colecoes': colecoes_list,
         }
     except HTTPException:
         raise
