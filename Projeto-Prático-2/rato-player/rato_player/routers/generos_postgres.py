@@ -17,7 +17,7 @@ from rato_player.schemas import (
     Mensagem,
 )
 
-router = APIRouter(prefix='/generos-postgres', tags=['Gêneros - Postgres'])
+router = APIRouter(prefix='/postgres/generos', tags=['Gêneros - Postgres'])
 
 SessionPostgres = Annotated[Session, Depends(get_postgres)]
 Pagination = Annotated[FilterPage, Query()]
