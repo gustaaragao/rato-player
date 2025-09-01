@@ -1,5 +1,9 @@
 # 🎵 Rato Player
 
+<div align="center">
+  <img src="docs/logo-rato-player.png" alt="Rato Player" title="Rato Player">
+</div>
+
 API REST para gerenciamento de coleções musicais com Python + FastAPI.
 
 ## 🛠 Tecnologias
@@ -11,6 +15,10 @@ API REST para gerenciamento de coleções musicais com Python + FastAPI.
 - **Pydantic**: Validação de dados e serialização com type hints
 - **Ruff**: Linter e formatador de código Python ultra-rápido
 - **pytest**: Framework de testes unitários
+
+## 🏗️ Diagrama da Arquitetura
+
+![Diagrama da Arquitetura da API](docs/diagrama-arquitetura.png "Diagrama da Arquitetura da API")
 
 ## 🚀 Instalação
 
