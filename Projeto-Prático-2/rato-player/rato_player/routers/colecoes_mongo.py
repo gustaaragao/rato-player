@@ -139,7 +139,6 @@ async def read_colecoes(pagination: Pagination):
 )
 async def search_colecoes(
     filters: Annotated[ColecaoSearchFilters, Query()],
-    pagination: Pagination,
 ):
     try:
         db = await get_mongo()
@@ -165,8 +164,8 @@ async def search_colecoes(
         elif filters.data_fim:
             filter_query['data_lancamento'] = {'$lte': filters.data_fim.isoformat()}
 
-        cursor = colecoes_collection.find(filter_query).skip(pagination.offset).limit(pagination.limit)
-        colecoes = await cursor.to_list(length=pagination.limit)
+        cursor = colecoes_collection.find(filter_query).skip(filters.offset).limit(filters.limit)
+        colecoes = await cursor.to_list(length=filters.limit)
 
         colecoes_response = []
         for colecao in colecoes:

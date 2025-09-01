@@ -11,14 +11,14 @@ class FilterPage(BaseModel):
     limit: int = Field(1, ge=1)
 
 
-class ColecaoSearchFilters(BaseModel):
+class ColecaoSearchFilters(FilterPage):
     titulo: Optional[str] = None
     tipo: Optional[TipoColecaoEnum] = None
     data_inicio: Optional[date] = None
     data_fim: Optional[date] = None
 
 
-class GeneroSearchFilters(BaseModel):
+class GeneroSearchFilters(FilterPage):
     nome: Optional[str] = None
     data_inicio: Optional[date] = None
     data_fim: Optional[date] = None

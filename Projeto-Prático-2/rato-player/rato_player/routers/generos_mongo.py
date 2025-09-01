@@ -138,10 +138,7 @@ async def read_generos(pagination: Pagination):
     """,
     response_model=GeneroList,
 )
-async def search_generos(
-    filters: Annotated[GeneroSearchFilters, Query()],
-    pagination: Pagination,
-):
+async def search_generos(filters: Annotated[GeneroSearchFilters, Query()]):
     try:
         db = await get_mongo()
         collection = db.generos
@@ -162,8 +159,8 @@ async def search_generos(
         elif filters.data_fim:
             filter_query['surgiu_em'] = {'$lte': filters.data_fim.isoformat()}
 
-        cursor = collection.find(filter_query).skip(pagination.offset).limit(pagination.limit)
-        generos = await cursor.to_list(length=pagination.limit)
+        cursor = collection.find(filter_query).skip(filters.offset).limit(filters.limit)
+        generos = await cursor.to_list(length=filters.limit)
 
         generos_response = []
         for genero in generos:

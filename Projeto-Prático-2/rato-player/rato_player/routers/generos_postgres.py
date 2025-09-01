@@ -76,7 +76,6 @@ def read_generos(session: SessionPostgres, pagination: Pagination):
 def search_generos(
     session: SessionPostgres,
     filters: Annotated[GeneroSearchFilters, Query()],
-    pagination: Pagination,
 ):
     stmt = select(Genero)
 
@@ -95,7 +94,7 @@ def search_generos(
     elif filters.data_fim:
         stmt = stmt.where(Genero.surgiu_em <= filters.data_fim)
 
-    stmt = stmt.offset(pagination.offset).limit(pagination.limit)
+    stmt = stmt.offset(filters.offset).limit(filters.limit)
 
     generos = session.execute(stmt).scalars().all()
 

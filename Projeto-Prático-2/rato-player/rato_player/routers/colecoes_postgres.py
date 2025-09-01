@@ -80,7 +80,6 @@ def read_colecoes(session: SessionPostgres, pagination: Pagination):
 def search_colecoes(
     session: SessionPostgres,
     filters: Annotated[ColecaoSearchFilters, Query()],
-    pagination: Pagination,
 ):
     stmt = select(Colecao)
 
@@ -102,7 +101,7 @@ def search_colecoes(
     elif filters.data_fim:
         stmt = stmt.where(Colecao.data_lancamento <= filters.data_fim)
 
-    stmt = stmt.offset(pagination.offset).limit(pagination.limit)
+    stmt = stmt.offset(filters.offset).limit(filters.limit)
 
     colecoes = session.execute(stmt.options(selectinload(Colecao.generos))).scalars().all()
 
