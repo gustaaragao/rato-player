@@ -1,7 +1,7 @@
 # 🎵 Rato Player
 
 <div align="center">
-  <img src="docs/logo-rato-player.png" alt="Rato Player" title="Rato Player">
+  <img src="docs/logo-rato-player-sem-fundo.png" alt="Rato Player" title="Rato Player">
 </div>
 
 API REST para gerenciamento de coleções musicais com Python + FastAPI.
@@ -21,8 +21,10 @@ API REST para gerenciamento de coleções musicais com Python + FastAPI.
 ![Diagrama da Arquitetura da API](docs/diagrama-arquitetura.png "Diagrama da Arquitetura da API")
 
 ## 🚀 Instalação
+Optamos por usar o [Poetry](https://python-poetry.org/) como gerenciador de pacotes no lugar do Pip. É necessário instalá-lo antes.
 
 ```bash
+
 git clone https://github.com/gustaaragao/rato-player.git
 cd rato-player
 poetry install
