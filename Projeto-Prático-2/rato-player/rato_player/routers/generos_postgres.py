@@ -54,9 +54,7 @@ def create_genero(genero_schema: GeneroSchema, session: SessionPostgres):
     response_model=GeneroList,
 )
 def read_generos(session: SessionPostgres, pagination: Pagination):
-    generos = session.scalars(
-        select(Genero).offset(pagination.offset).limit(pagination.limit)
-    ).all()
+    generos = session.scalars(select(Genero).offset(pagination.offset).limit(pagination.limit)).all()
 
     return {'generos': generos}
 
@@ -128,9 +126,7 @@ def read_genero_by_id(id_genero: int, session: SessionPostgres):
     description='Substitui todos os campos do gênero especificado pelo corpo enviado.',
     response_model=GeneroPublic,
 )
-def update_genero(
-    id_genero: int, genero_schema: GeneroSchema, session: SessionPostgres
-):
+def update_genero(id_genero: int, genero_schema: GeneroSchema, session: SessionPostgres):
     genero = session.scalar(select(Genero).where(Genero.id_genero == id_genero))
 
     if not genero:
@@ -156,9 +152,7 @@ def update_genero(
     description='Atualiza apenas os campos enviados no corpo da requisição.',
     response_model=GeneroPublic,
 )
-def patch_genero(
-    id_genero: int, genero_schema: GeneroUpdateSchema, session: SessionPostgres
-):
+def patch_genero(id_genero: int, genero_schema: GeneroUpdateSchema, session: SessionPostgres):
     genero = session.scalar(select(Genero).where(Genero.id_genero == id_genero))
 
     if not genero:

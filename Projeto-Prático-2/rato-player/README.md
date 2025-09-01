@@ -7,11 +7,10 @@ API REST para gerenciamento de coleções musicais com Python + FastAPI.
 - **Poetry**: Gerenciador de dependências e ambientes virtuais Python
 - **FastAPI**: Framework web moderno para criação de APIs REST com documentação automática
 - **SQLAlchemy**: ORM para interação com banco de dados PostgreSQL
+- **Motor**: Driver async para MongoDB com Python
 - **Pydantic**: Validação de dados e serialização com type hints
 - **Ruff**: Linter e formatador de código Python ultra-rápido
 - **pytest**: Framework de testes unitários
-
-> **⚠️ Nota importante**: O projeto não possui testes unitários :(
 
 ## 🚀 Instalação
 
@@ -47,7 +46,7 @@ MONGODB_PASSWORD=
 # Desenvolvimento
 task run
 
-# Testes (⚠️ atualmente com problemas de configuração)
+# Testes (⚠️ atualmente não há testes implementados)
 task test
 
 # Formatar o código
@@ -60,33 +59,40 @@ task lint
 
 ## 🛣 API Endpoints
 
-### Gêneros
-- `POST /generos/` - Criar
-- `GET /generos/` - Listar (paginação)
-- `GET /generos/search` - Buscar por nome/data
-- `GET /generos/{id}` - Obter por ID
-- `PUT/PATCH /generos/{id}` - Atualizar
-- `DELETE /generos/{id}` - Excluir
+O projeto oferece **dois conjuntos completos de APIs** idênticas:
+- **PostgreSQL**: `/postgres/generos/` e `/postgres/colecoes/` (relacional)
+- **MongoDB**: `/mongo/generos/` e `/mongo/colecoes/` (documento)
 
-### Coleções
-- `POST /colecoes/` - Criar
-- `GET /colecoes/` - Listar (paginação)
-- `GET /colecoes/search` - Buscar por título/tipo/data
-- `GET /colecoes/{id}` - Obter por ID
-- `PUT/PATCH /colecoes/{id}` - Atualizar
-- `DELETE /colecoes/{id}` - Excluir
-- `POST/DELETE /colecoes/{id}/generos/{genero_id}` - Gerenciar relacionamentos
+Ambas implementações compartilham os mesmos schemas Pydantic e oferecem funcionalidades idênticas.
+
+### Gêneros (PostgreSQL: `/postgres/generos/` | MongoDB: `/mongo/generos/`)
+- `POST /` - Criar
+- `GET /` - Listar (paginação)
+- `GET /buscar` - Buscar por nome/data
+- `GET /{id}` - Obter por ID
+- `PUT/PATCH /{id}` - Atualizar
+- `DELETE /{id}` - Excluir
+
+### Coleções (PostgreSQL: `/postgres/colecoes/` | MongoDB: `/mongo/colecoes/`)
+- `POST /` - Criar
+- `GET /` - Listar (paginação)
+- `GET /buscar` - Buscar por título/tipo/data
+- `GET /{id}` - Obter por ID
+- `PUT/PATCH /{id}` - Atualizar
+- `DELETE /{id}` - Excluir
+- `POST/DELETE /{id}/generos/{genero_id}` - Gerenciar relacionamentos
 
 ## 📖 Exemplo de Uso
 
+### PostgreSQL (IDs inteiros)
 ```bash
 # Criar gênero
-curl -X POST "http://localhost:8000/generos/" \
+curl -X POST "http://localhost:8000/postgres/generos/" \
      -H "Content-Type: application/json" \
      -d '{"nome": "Rock", "surgiu_em": "1950-01-01"}'
 
 # Criar coleção
-curl -X POST "http://localhost:8000/colecoes/" \
+curl -X POST "http://localhost:8000/postgres/colecoes/" \
      -H "Content-Type: application/json" \
      -d '{
        "titulo": "Dark Side of the Moon",
@@ -97,8 +103,21 @@ curl -X POST "http://localhost:8000/colecoes/" \
      }'
 ```
 
-## ‍💻 Autores
+### MongoDB (IDs string/ObjectId)
+```bash
+# Criar gênero (mesma estrutura, endpoint diferente)
+curl -X POST "http://localhost:8000/mongo/generos/" \
+     -H "Content-Type: application/json" \
+     -d '{"nome": "Jazz", "surgiu_em": "1900-01-01"}'
 
-**Gustavo Aragão** - gustavo.aragao@dcomp.com
-
-# TODO: Adicionar o nome do resto do pessoal e e-mails
+# Criar coleção (mesma estrutura, endpoint diferente)
+curl -X POST "http://localhost:8000/mongo/colecoes/" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "titulo": "Kind of Blue",
+       "tipo": "Album", 
+       "duracao": 2876,
+       "caminho_capa": "/covers/kob.jpg",
+       "data_lancamento": "1959-08-17"
+     }'
+```

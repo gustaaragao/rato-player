@@ -1,5 +1,5 @@
 from datetime import date
-from typing import Optional
+from typing import Optional, Union
 
 from pydantic import BaseModel, Field
 
@@ -28,6 +28,7 @@ class Mensagem(BaseModel):
     mensagem: str
 
 
+# Schemas de entrada/edição (comuns para PostgreSQL e MongoDB)
 class GeneroSchema(BaseModel):
     nome: str
     surgiu_em: date
@@ -36,12 +37,6 @@ class GeneroSchema(BaseModel):
 class GeneroUpdateSchema(BaseModel):
     nome: Optional[str] = None
     surgiu_em: Optional[date] = None
-
-
-class GeneroBasic(BaseModel):
-    id_genero: int
-    nome: str
-    surgiu_em: date
 
 
 class ColecaoSchema(BaseModel):
@@ -60,8 +55,15 @@ class ColecaoUpdateSchema(BaseModel):
     data_lancamento: Optional[date] = None
 
 
+# Schemas básicos (flexíveis para PostgreSQL e MongoDB)
+class GeneroBasic(BaseModel):
+    id_genero: Union[int, str]  # int para PostgreSQL, str para MongoDB
+    nome: str
+    surgiu_em: date
+
+
 class ColecaoBasic(BaseModel):
-    id_colecao: int
+    id_colecao: Union[int, str]  # int para PostgreSQL, str para MongoDB
     titulo: str
     tipo: str
     duracao: int
@@ -69,15 +71,16 @@ class ColecaoBasic(BaseModel):
     data_lancamento: date
 
 
+# Schemas públicos (flexíveis para PostgreSQL e MongoDB)
 class GeneroPublic(BaseModel):
-    id_genero: int
+    id_genero: Union[int, str]  # int para PostgreSQL, str para MongoDB
     nome: str
     surgiu_em: date
     colecoes: list[ColecaoBasic] = []
 
 
 class ColecaoPublic(BaseModel):
-    id_colecao: int
+    id_colecao: Union[int, str]  # int para PostgreSQL, str para MongoDB
     titulo: str
     tipo: str
     duracao: int
@@ -86,7 +89,7 @@ class ColecaoPublic(BaseModel):
     generos: list[GeneroBasic] = []
 
 
-# Schemas para listas
+# Schemas para listas (reutilizáveis para PostgreSQL e MongoDB)
 class GeneroList(BaseModel):
     generos: list[GeneroPublic]
 

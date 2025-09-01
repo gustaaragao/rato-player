@@ -11,7 +11,7 @@ MONGODB_URL = f'mongodb://{settings.MONGODB_USER}:{settings.MONGODB_PASSWORD}@{s
 DB_NAME = settings.MONGODB_DB_NAME
 
 
-async def get_mongodb_database():
+async def get_mongo():
     client: AsyncIOMotorClient = None
     if client is None:
         try:

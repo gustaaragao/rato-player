@@ -1,7 +1,7 @@
 [project]
 name = "rato-player"
 version = "0.1.0"
-description = ""
+description = "API do Aplicativo de Música 'Rato Player'"
 authors = [
     {name = "gustaaragao",email = "gustavohenriquearagaosilva@gmail.com"}
 ]
@@ -32,7 +32,7 @@ factory-boy = "^3.3.3"
 freezegun = "^1.5.5"
 
 [tool.ruff]
-line-length = 88 # O comprimento máximo de linha para 79 caracteres (sugestão do PEP-8)
+line-length = 110
 
 [tool.ruff.lint]
 preview = true

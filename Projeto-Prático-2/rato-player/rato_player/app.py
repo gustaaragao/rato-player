@@ -9,8 +9,8 @@ from rato_player.routers import (
 
 app = FastAPI(
     title='Rato Player API',
-    description='API para gerenciamento de coleções musicais.',
-    version='1.0.0',
+    description='API do Aplicativo de Música "Rato Player"',
+    version='0.1.0',
 )
 
 # Routers PostgreSQL

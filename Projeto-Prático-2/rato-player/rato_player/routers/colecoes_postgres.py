@@ -104,9 +104,7 @@ def search_colecoes(
 
     stmt = stmt.offset(pagination.offset).limit(pagination.limit)
 
-    colecoes = (
-        session.execute(stmt.options(selectinload(Colecao.generos))).scalars().all()
-    )
+    colecoes = session.execute(stmt.options(selectinload(Colecao.generos))).scalars().all()
 
     return {'colecoes': colecoes}
 
@@ -119,9 +117,7 @@ def search_colecoes(
 )
 def read_colecao_by_id(id_colecao: int, session: SessionPostgres):
     colecao = session.scalar(
-        select(Colecao)
-        .options(selectinload(Colecao.generos))
-        .where(Colecao.id_colecao == id_colecao)
+        select(Colecao).options(selectinload(Colecao.generos)).where(Colecao.id_colecao == id_colecao)
     )
 
     if not colecao:
@@ -139,9 +135,7 @@ def read_colecao_by_id(id_colecao: int, session: SessionPostgres):
     description='Substitui todos os campos da coleção especificada pelo corpo enviado.',
     response_model=ColecaoPublic,
 )
-def update_colecao(
-    id_colecao: int, colecao_schema: ColecaoSchema, session: SessionPostgres
-):
+def update_colecao(id_colecao: int, colecao_schema: ColecaoSchema, session: SessionPostgres):
     colecao = session.scalar(select(Colecao).where(Colecao.id_colecao == id_colecao))
 
     if not colecao:
@@ -167,9 +161,7 @@ def update_colecao(
     description='Atualiza apenas os campos enviados no corpo da requisição.',
     response_model=ColecaoPublic,
 )
-def patch_colecao(
-    id_colecao: int, colecao_schema: ColecaoUpdateSchema, session: SessionPostgres
-):
+def patch_colecao(id_colecao: int, colecao_schema: ColecaoUpdateSchema, session: SessionPostgres):
     colecao = session.scalar(select(Colecao).where(Colecao.id_colecao == id_colecao))
 
     if not colecao:
@@ -237,22 +229,14 @@ def add_genero_to_colecao(id_colecao: int, id_genero: int, session: SessionPostg
     if genero in colecao.generos:
         raise HTTPException(
             status_code=HTTPStatus.CONFLICT,
-            detail=(
-                f'O gênero "{genero.nome}" já está associado à '
-                f'coleção "{colecao.titulo}".'
-            ),
+            detail=(f'O gênero "{genero.nome}" já está associado à coleção "{colecao.titulo}".'),
         )
 
     # Adicionar o gênero à coleção
     colecao.generos.append(genero)
     session.commit()
 
-    return {
-        'mensagem': (
-            f'Gênero "{genero.nome}" associado à '
-            f'coleção "{colecao.titulo}" com sucesso.'
-        )
-    }
+    return {'mensagem': (f'Gênero "{genero.nome}" associado à coleção "{colecao.titulo}" com sucesso.')}
 
 
 @router.delete(
@@ -261,9 +245,7 @@ def add_genero_to_colecao(id_colecao: int, id_genero: int, session: SessionPostg
     description='Remove um gênero de uma coleção específica.',
     response_model=Mensagem,
 )
-def remove_genero_from_colecao(
-    id_colecao: int, id_genero: int, session: SessionPostgres
-):
+def remove_genero_from_colecao(id_colecao: int, id_genero: int, session: SessionPostgres):
     # Buscar a coleção
     colecao = session.scalar(select(Colecao).where(Colecao.id_colecao == id_colecao))
     if not colecao:
@@ -284,22 +266,14 @@ def remove_genero_from_colecao(
     if genero not in colecao.generos:
         raise HTTPException(
             status_code=HTTPStatus.NOT_FOUND,
-            detail=(
-                f'O gênero "{genero.nome}" não está associado à '
-                f'coleção "{colecao.titulo}".'
-            ),
+            detail=(f'O gênero "{genero.nome}" não está associado à coleção "{colecao.titulo}".'),
         )
 
     # Remover o gênero da coleção
     colecao.generos.remove(genero)
     session.commit()
 
-    return {
-        'mensagem': (
-            f'Gênero "{genero.nome}" desassociado da '
-            f'coleção "{colecao.titulo}" com sucesso.'
-        )
-    }
+    return {'mensagem': (f'Gênero "{genero.nome}" desassociado da coleção "{colecao.titulo}" com sucesso.')}
 
 
 @router.get(
@@ -336,9 +310,7 @@ def get_generos_from_colecao(id_colecao: int, session: SessionPostgres):
     description='Substitui todos os gêneros de uma coleção pelos IDs fornecidos.',
     response_model=Mensagem,
 )
-def set_generos_to_colecao(
-    id_colecao: int, generos_ids: list[int], session: SessionPostgres
-):
+def set_generos_to_colecao(id_colecao: int, generos_ids: list[int], session: SessionPostgres):
     # Buscar a coleção
     colecao = session.scalar(select(Colecao).where(Colecao.id_colecao == id_colecao))
     if not colecao:
@@ -348,16 +320,12 @@ def set_generos_to_colecao(
         )
 
     # Buscar todos os gêneros pelos IDs
-    generos = session.scalars(
-        select(Genero).where(Genero.id_genero.in_(generos_ids))
-    ).all()
+    generos = session.scalars(select(Genero).where(Genero.id_genero.in_(generos_ids))).all()
 
     # Verificar se todos os gêneros foram encontrados
     if len(generos) != len(generos_ids):
         generos_encontrados = [g.id_genero for g in generos]
-        generos_nao_encontrados = [
-            id for id in generos_ids if id not in generos_encontrados
-        ]
+        generos_nao_encontrados = [id for id in generos_ids if id not in generos_encontrados]
         raise HTTPException(
             status_code=HTTPStatus.NOT_FOUND,
             detail=f'Gêneros não encontrados: {generos_nao_encontrados}',
@@ -369,9 +337,4 @@ def set_generos_to_colecao(
     session.commit()
 
     generos_nomes = [g.nome for g in generos]
-    return {
-        'mensagem': (
-            f'Gêneros da coleção "{colecao.titulo}" definidos como: '
-            f'{", ".join(generos_nomes)}'
-        )
-    }
+    return {'mensagem': (f'Gêneros da coleção "{colecao.titulo}" definidos como: {", ".join(generos_nomes)}')}
