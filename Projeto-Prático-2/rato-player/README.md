@@ -1,10 +1,10 @@
 # 🎵 Rato Player
 
 <div align="center">
-  <img src="docs/logo-rato-player-sem-fundo.png" alt="Rato Player" title="Rato Player">
+  <img src="docs/logo-rato-player.png" alt="Rato Player" title="Rato Player"> <br>
+  API Rest do Aplicativo de Música "Rato Player".
 </div>
 
-API Rest do Aplicativo de Música "Rato Player".
 
 ## 🛠 Tecnologias
 
