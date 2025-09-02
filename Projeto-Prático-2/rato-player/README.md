@@ -5,6 +5,9 @@
   API Rest do Aplicativo de Música "Rato Player".
 </div>
 
+## 📺 Vídeo de Explicação
+
+Durante a disciplina foi solicitado um [vídeo](https://www.youtube.com/watch?v=XjSTXOpPRZU) mostrando o funcionamento da API.
 
 ## 🛠 Tecnologias
 
